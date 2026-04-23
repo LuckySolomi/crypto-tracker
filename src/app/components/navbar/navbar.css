@@ -1,0 +1,57 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 2px solid #e4e1e1;
+  color: #020c3a;
+}
+
+/* ліва частина */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* логотип */
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* текст */
+.title {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* права частина */
+.navbar-right {
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-right a {
+  color: #020c3a;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.navbar-right a:hover {
+  color: #38bdf8;
+}
+
+.navbar-right a.active {
+  color: #38bdf8;
+}
