@@ -1,0 +1,36 @@
+.notFoundPage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5rem;
+}
+
+.notFoundPageNumber {
+  font-size: 110px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.notFoundPageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 400;
+  font-size: 20px;
+  background-color: #38bdf8;
+  color: white;
+}
+
+.notFoundPageButton:hover {
+  background-color: #0ea5e9;
+  cursor: pointer;
+}
+
+.notFoundPageButton a {
+  color: white;
+  text-decoration: none;
+}
