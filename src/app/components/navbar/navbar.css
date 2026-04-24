@@ -16,23 +16,24 @@
 
 /* логотип */
 .logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #38bdf8;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   font-weight: bold;
   font-size: 20px;
+  background-color: #38bdf8;
+  color: white;
+  cursor: pointer;
 }
 
 /* текст */
 .title {
   font-size: 26px;
   font-weight: 700;
+  cursor: pointer;
 }
 
 /* права частина */
