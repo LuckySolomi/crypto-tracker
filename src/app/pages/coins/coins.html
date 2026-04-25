@@ -1,1 +1,74 @@
-<p>coins works!</p>
+<div class="coins-page">
+  <h1>Top Crypto Currencies</h1>
+  <p>Data from CoinGecko</p>
+
+  <div *ngIf="loading; else coinsTable">
+    <p>Loading...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-message">
+    {{ error }}
+  </div>
+
+  <ng-template #coinsTable>
+    <table *ngIf="!loading && !error" class="coins-table">
+      <thead>
+        <tr class="table-title-row">
+          <th>#</th>
+          <th>Coin</th>
+          <th>Price</th>
+          <th>24h Change</th>
+          <th>Market Cap</th>
+          <th>Add</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let coin of paginatedCoins">
+          <td>{{ coin.market_cap_rank }}</td>
+
+          <td class="coin-info">
+            <img [src]="coin.image" [alt]="coin.name" />
+
+            <div class="coin-name-container">
+              <span class="coin-name">{{ coin.name }}</span>
+              <span class="coin-symbol">
+                {{ coin.symbol.toUpperCase() }}
+              </span>
+            </div>
+          </td>
+
+          <td>{{ coin.current_price | currency: 'USD' }}</td>
+
+          <td
+            [class.positive]="coin.price_change_percentage_24h >= 0"
+            [class.negative]="coin.price_change_percentage_24h < 0"
+          >
+            {{ coin.price_change_percentage_24h | number: '1.2-2' }}%
+          </td>
+
+          <td>
+            {{ coin.market_cap | currency: 'USD' : 'symbol' : '1.0-0' }}
+          </td>
+
+          <td>
+            <button class="tableButton">Add</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+  <div class="pagination">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+
+    <button
+      *ngFor="let page of pages"
+      (click)="goToPage(page)"
+      [class.active]="page === currentPage"
+    >
+      {{ page }}
+    </button>
+
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>
