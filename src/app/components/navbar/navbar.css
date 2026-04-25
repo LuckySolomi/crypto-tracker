@@ -7,14 +7,12 @@
   color: #020c3a;
 }
 
-/* ліва частина */
 .navbar-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* логотип */
 .logo {
   display: flex;
   align-items: center;
@@ -29,24 +27,24 @@
   cursor: pointer;
 }
 
-/* текст */
 .title {
   font-size: 26px;
   font-weight: 700;
   cursor: pointer;
 }
 
-/* права частина */
 .navbar-right {
   display: flex;
   gap: 20px;
 }
 
 .navbar-right a {
-  color: #020c3a;
+  padding: 0;
   text-decoration: none;
   font-weight: 700;
   font-size: 16px;
+  color: #020c3a;
+  transition: all 0.2s ease;
 }
 
 .navbar-right a:hover {
@@ -55,4 +53,64 @@
 
 .navbar-right a.active {
   color: #38bdf8;
+}
+
+.burger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.burger span {
+  width: 25px;
+  height: 3px;
+  background: black;
+  transition: 0.3s;
+}
+
+.burger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.burger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.burger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+@media (max-width: 768px) {
+  .burger {
+    display: flex;
+  }
+
+  .navbar-right {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    min-width: 390px;
+    display: none;
+    flex-direction: column;
+    padding: 10px 0;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .navbar-right.open {
+    display: flex;
+  }
+
+  .navbar-right a {
+    text-align: center;
+    padding: 10px;
+    font-size: 18px;
+  }
+
+  .navbar-right a:hover {
+    background: #38bdf8;
+    color: white;
+  }
 }

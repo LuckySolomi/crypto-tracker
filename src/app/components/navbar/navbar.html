@@ -4,9 +4,15 @@
     <span class="title" routerLink="/coins">CryptoTracker</span>
   </div>
 
-  <div class="navbar-right">
-    <a routerLink="/coins/:id" routerLinkActive="active">Coins</a>
-    <a routerLink="/portfolio" routerLinkActive="active">Portfolio</a>
-    <a routerLink="/wishlist" routerLinkActive="active">Wishlist</a>
+  <div class="burger" (click)="toggleMenu()" [class.open]="isMenuOpen">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="navbar-right" [class.open]="isMenuOpen">
+    <a routerLink="/coins" (click)="toggleMenu()">Coins</a>
+    <a routerLink="/portfolio" (click)="toggleMenu()">Portfolio</a>
+    <a routerLink="/wishlist" (click)="toggleMenu()">Wishlist</a>
   </div>
 </nav>
