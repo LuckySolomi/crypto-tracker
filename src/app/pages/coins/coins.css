@@ -34,6 +34,7 @@
   display: block;
   width: 32px;
   height: 32px;
+  cursor: pointer;
 }
 
 .coin-name-container {
@@ -43,6 +44,12 @@
 .coin-name {
   display: block;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.coin-name:hover {
+  color: #38bdf8;
 }
 
 .coin-symbol {
@@ -146,6 +153,7 @@
 
   .coin-name-container {
     display: flex;
+    justify-content: center;
     align-items: center;
   }
 

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, of, tap, map } from 'rxjs';
 import { Coin } from '../models/coin.interface';
 
 @Injectable({
@@ -83,5 +83,9 @@ export class CoinService {
 
     localStorage.removeItem(this.STORAGE_KEY);
     localStorage.removeItem(this.STORAGE_TIME_KEY);
+  }
+
+  getCoinById(id: string): Observable<Coin | undefined> {
+    return this.getCoins().pipe(map((coins) => coins.find((coin) => coin.id === id)));
   }
 }

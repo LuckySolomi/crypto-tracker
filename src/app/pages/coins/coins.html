@@ -28,10 +28,10 @@
           <td>{{ coin.market_cap_rank }}</td>
 
           <td class="coin-info">
-            <img [src]="coin.image" [alt]="coin.name" />
+            <img [src]="coin.image" [alt]="coin.name" [routerLink]="['/coins', coin.id]" />
 
             <div class="coin-name-container">
-              <span class="coin-name">{{ coin.name }}</span>
+              <span [routerLink]="['/coins', coin.id]" class="coin-name">{{ coin.name }}</span>
               <span class="coin-symbol">
                 {{ coin.symbol.toUpperCase() }}
               </span>

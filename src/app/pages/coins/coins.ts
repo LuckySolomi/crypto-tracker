@@ -2,11 +2,12 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { CoinService } from '../../services/coin.service';
 import { Coin } from '../../models/coin.interface';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-coins',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, DecimalPipe],
+  imports: [CommonModule, CurrencyPipe, DecimalPipe, RouterLink],
   templateUrl: './coins.html',
   styleUrl: './coins.css',
 })
@@ -53,7 +54,7 @@ export class Coins implements OnInit {
     return Math.ceil(this.coins.length / this.itemsPerPage);
   }
 
-  // масив сторінок [1,2,3...]
+  // масив сторінок
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
