@@ -1,1 +1,115 @@
-<p>coin-details works!</p>
+<div class="coin-details-page" *ngIf="coin; else loadingTemplate">
+  <button class="back-button" routerLink="/coins">← Back to Coins</button>
+
+  <div class="coin-details-layout">
+    <!-- LEFT SIDE -->
+    <section class="coin-info-section">
+      <div class="coin-header">
+        <img [src]="coin.image" [alt]="coin.name" class="coin-logo" />
+
+        <div>
+          <h1>{{ coin.name }}</h1>
+          <span class="coin-symbol">
+            {{ coin.symbol.toUpperCase() }}
+          </span>
+        </div>
+      </div>
+
+      <div class="coin-price">
+        <h2>{{ coin.current_price | currency: 'USD' }}</h2>
+
+        <span
+          class="price-change"
+          [class.positive]="coin.price_change_percentage_24h >= 0"
+          [class.negative]="coin.price_change_percentage_24h < 0"
+        >
+          {{ coin.price_change_percentage_24h | number: '1.2-2' }}% (24h)
+        </span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span>Market Cap</span>
+          <strong>
+            {{ coin.market_cap | currency: 'USD' : 'symbol' : '1.0-0' }}
+          </strong>
+        </div>
+
+        <div class="stat-card">
+          <span>24h Volume</span>
+          <strong>
+            {{ coin.total_volume | currency: 'USD' : 'symbol' : '1.0-0' }}
+          </strong>
+        </div>
+
+        <div class="stat-card">
+          <span>24h High</span>
+          <strong>
+            {{ coin.high_24h | currency: 'USD' }}
+          </strong>
+        </div>
+
+        <div class="stat-card">
+          <span>24h Low</span>
+          <strong>
+            {{ coin.low_24h | currency: 'USD' }}
+          </strong>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h3>About {{ coin.name }}</h3>
+
+        <p>{{ displayedDescription }}</p>
+
+        <button
+          *ngIf="(coin.name + description).length > 350"
+          class="read-more-btn"
+          (click)="toggleDescription()"
+        >
+          {{ isDescriptionExpanded ? 'Read less' : 'Read more' }}
+        </button>
+      </div>
+    </section>
+
+    <!-- RIGHT SIDE -->
+    <section class="coin-chart-section">
+      <div class="chart-placeholder">
+        <h3>Price Chart</h3>
+        <p>Chart coming soon...</p>
+      </div>
+
+      <div class="calculator-card">
+        <h3>Crypto Calculator</h3>
+
+        <div class="form-group">
+          <label>{{ coin.symbol.toUpperCase() }} Amount</label>
+          <input
+            type="number"
+            min="0"
+            step="any"
+            [(ngModel)]="coinAmount"
+            (input)="onCoinInput()"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>USD Value</label>
+          <input type="number" min="0" step="any" [(ngModel)]="usdValue" (input)="onUsdInput()" />
+        </div>
+        <p class="error" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </p>
+
+        <button class="portfolio-button" (click)="addToPortfolio()">Add to Portfolio</button>
+      </div>
+    </section>
+    <div class="toast" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTemplate>
+  <p class="loading">Loading coin details...</p>
+</ng-template>
