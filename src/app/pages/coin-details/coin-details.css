@@ -29,6 +29,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  min-width: 0;
 }
 
 .coin-info-section,
@@ -36,6 +37,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  min-width: 0;
 }
 
 .coin-header {
@@ -149,6 +151,22 @@
 .read-more-btn:hover {
   color: #4f46e5;
   transform: translateX(-3px);
+}
+
+.chart-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.chart-container {
+  position: relative;
+  height: 350px;
+  width: 100%;
 }
 
 .chart-placeholder,
@@ -292,5 +310,13 @@
 
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    padding: 15px;
+  }
+
+  .chart-container {
+    height: 280px;
   }
 }

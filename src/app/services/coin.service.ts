@@ -11,6 +11,7 @@ export class CoinService {
   private apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
 
   private cache: Coin[] | null = null;
+  private chartCache: Record<string, any> = {};
 
   private readonly STORAGE_KEY = 'crypto-coins-cache';
   private readonly STORAGE_TIME_KEY = 'crypto-coins-cache-time';
@@ -87,5 +88,46 @@ export class CoinService {
 
   getCoinById(id: string): Observable<Coin | undefined> {
     return this.getCoins().pipe(map((coins) => coins.find((coin) => coin.id === id)));
+  }
+
+  getCoinChart(id: string): Observable<any> {
+    if (this.chartCache[id]) {
+      console.log('Returning chart from memory cache');
+      return of(this.chartCache[id]);
+    }
+
+    const storageKey = `crypto-chart-${id}`;
+    const storageTimeKey = `crypto-chart-time-${id}`;
+
+    const storedData = localStorage.getItem(storageKey);
+    const storedTime = localStorage.getItem(storageTimeKey);
+
+    if (storedData && storedTime) {
+      const age = Date.now() - Number(storedTime);
+
+      if (age < this.CACHE_DURATION) {
+        const parsed = JSON.parse(storedData);
+        this.chartCache[id] = parsed;
+
+        console.log('Returning chart from localStorage');
+        return of(parsed);
+      }
+    }
+
+    return this.http
+      .get<any>(`https://api.coingecko.com/api/v3/coins/${id}/market_chart`, {
+        params: {
+          vs_currency: 'usd',
+          days: '1',
+        },
+      })
+      .pipe(
+        tap((data) => {
+          this.chartCache[id] = data;
+
+          localStorage.setItem(storageKey, JSON.stringify(data));
+          localStorage.setItem(storageTimeKey, Date.now().toString());
+        }),
+      );
   }
 }
