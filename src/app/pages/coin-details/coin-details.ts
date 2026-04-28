@@ -57,14 +57,16 @@ export class CoinDetails implements OnInit {
   // DESCRIPTION
   isDescriptionExpanded = false;
   description = `
-  is one of the leading cryptocurrencies in the digital asset market.
-  It has attracted significant attention from investors, traders, and blockchain enthusiasts worldwide.
-  Its market performance, adoption, and innovative technology continue to shape the future of decentralized finance.
+    is one of the leading cryptocurrencies in the digital asset market.
+    It has attracted significant attention from investors, traders, and blockchain enthusiasts worldwide.
+    Its market performance, adoption, and innovative technology continue to shape the future of decentralized finance.
+    As one of the most recognized digital assets, it plays an important role in the rapidly evolving blockchain industry.
+    Investors often monitor its price movements, market capitalization, trading volume, and adoption trends to make informed decisions.
   `;
 
   public lineChartType: 'line' = 'line';
 
-  // Початкові дані (порожні)
+  // Початкові дані
   public lineChartData: ChartConfiguration<'line'>['data'] = {
     labels: [],
     datasets: [
@@ -81,7 +83,7 @@ export class CoinDetails implements OnInit {
     ],
   };
 
-  // Оновлені налаштування: адаптивність та взаємодія
+  //  адаптивність та взаємодія
   public lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
@@ -104,14 +106,25 @@ export class CoinDetails implements OnInit {
       x: {
         grid: { display: false },
         ticks: {
-          maxTicksLimit: 8, // Щоб не захаращувати вісь на мобільних
+          maxTicksLimit: 8,
           maxRotation: 0,
         },
       },
       y: {
         grid: { color: 'rgba(0, 0, 0, 0.05)' },
         ticks: {
-          callback: (value) => '$' + value,
+          // value — це число, яке приходить від Chart.js
+          callback: function (value) {
+            const numValue = Number(value);
+            // Якщо число маленьке (менше 10), показуємо 3 знаки, якщо велике — 2 або 0
+            return (
+              '$' +
+              numValue.toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: numValue < 10 ? 3 : 2,
+              })
+            );
+          },
         },
       },
     },
@@ -140,25 +153,39 @@ export class CoinDetails implements OnInit {
     });
   }
 
-  loadChart(coinId: string): void {
-    this.coinService.getCoinChart(coinId).subscribe({
+  periods = [
+    { label: '24H', value: '1' },
+    { label: '7D', value: '7' },
+    { label: '30D', value: '30' },
+    { label: '1Y', value: '365' },
+  ];
+  activePeriod = '1';
+
+  changePeriod(days: string): void {
+    this.activePeriod = days;
+    const coinId = this.route.snapshot.paramMap.get('id');
+    if (coinId) {
+      this.loadChart(coinId, days);
+    }
+  }
+
+  loadChart(coinId: string, days: string = '1'): void {
+    this.coinService.getCoinChart(coinId, days).subscribe({
       next: (data) => {
         const prices = data.prices;
 
-        // ОПТИМІЗАЦІЯ: беремо кожну 3-тю точку (якщо API дає дані щогодини, це буде 3-год інтервал)
-        const filteredData = prices.filter((_: any, index: number) => index % 3 === 0);
+        const step = days === '1' ? 3 : days === '7' ? 12 : 24;
+        const filteredData = prices.filter((_: any, index: number) => index % step === 0);
 
-        // Оновлюємо дані всередині існуючого об'єкта (важливо для ng2-charts)
-        this.lineChartData.labels = filteredData.map((price: number[]) =>
-          new Date(price[0]).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-        );
+        this.lineChartData.labels = filteredData.map((price: number[]) => {
+          const date = new Date(price[0]);
+          // Якщо вибрано більше 1 дня, показуємо дату, а не час
+          return days === '1'
+            ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            : date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        });
 
         this.lineChartData.datasets[0].data = filteredData.map((price: number[]) => price[1]);
-
-        // Примусово перемальовуємо графік
         this.chart?.update();
       },
       error: (error) => console.error(error),
