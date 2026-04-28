@@ -11,8 +11,26 @@
   </div>
 
   <div class="navbar-right" [class.open]="isMenuOpen">
-    <a routerLink="/coins" (click)="toggleMenu()">Coins</a>
-    <a routerLink="/portfolio" (click)="toggleMenu()">Portfolio</a>
-    <a routerLink="/wishlist" (click)="toggleMenu()">Wishlist</a>
+    <a
+      routerLink="/coins"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="toggleMenu()"
+      >Coins</a
+    >
+    <a
+      routerLink="/portfolio"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="toggleMenu()"
+      >Portfolio</a
+    >
+    <a
+      routerLink="/wishlist"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="toggleMenu()"
+      >Wishlist</a
+    >
   </div>
 </nav>
