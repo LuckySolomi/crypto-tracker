@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Edit {{ data.name }}</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="fill" style="width: 100%; margin-top: 10px">
+    <mat-label>Quantity</mat-label>
+    <input matInput type="number" [(ngModel)]="newAmount" (input)="updateTotal()" />
+  </mat-form-field>
+  <p>
+    New Total: <strong>{{ newTotalUsd | currency: 'USD' }}</strong>
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [mat-dialog-close]="{ amount: newAmount, totalUsd: newTotalUsd }"
+  >
+    Save
+  </button>
+</mat-dialog-actions>
