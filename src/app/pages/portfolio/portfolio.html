@@ -1,1 +1,76 @@
-<p>portfolio works!</p>
+<div class="portfolio-page">
+  <h1>My Portfolio</h1>
+
+  <div class="summary">
+    <h2>{{ totalBalance | currency: 'USD' }}</h2>
+    <p [class.positive]="totalProfit >= 0" [class.negative]="totalProfit < 0">
+      {{ totalProfit | currency: 'USD' }}
+    </p>
+  </div>
+
+  <div *ngIf="portfolio.length > 0; else emptyPortfolio">
+    <div class="summary"></div>
+
+    <table class="portfolio-table">
+      <thead>
+        <tr class="table-title-row">
+          <th>Coin</th>
+          <th>Amount</th>
+          <th>Avg Buy Price</th>
+          <th>Current Price</th>
+          <th>Current Value</th>
+          <th>Profit / Loss</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of portfolio">
+          <td class="coin-info">
+            <img [src]="item.image" [alt]="item.name" [routerLink]="['/coins', item.id]" />
+
+            <div class="coin-name-container">
+              <span [routerLink]="['/coins', item.id]" class="coin-name">{{ item.name }}</span>
+              <span class="coin-symbol">
+                {{ item.symbol.toUpperCase() }}
+              </span>
+            </div>
+          </td>
+
+          <td>{{ item.amount }}</td>
+
+          <td>
+            {{ getAvgPrice(item) | currency: 'USD' }}
+          </td>
+
+          <td>
+            {{ item.currentPrice | currency: 'USD' }}
+          </td>
+
+          <td>
+            {{ getCurrentValue(item) | currency: 'USD' }}
+          </td>
+
+          <td [class.positive]="getProfit(item) >= 0" [class.negative]="getProfit(item) < 0">
+            {{ getProfit(item) | currency: 'USD' }}
+          </td>
+
+          <td>
+            <button (click)="editCoin(item)" class="optional-button">✏️</button>
+            <button (click)="deleteCoin(item)" class="optional-button">🗑</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="portfolio-button-container">
+      <button routerLink="/coins" class="portfolio-button">+ Add New Coin</button>
+    </div>
+  </div>
+
+  <ng-template #emptyPortfolio>
+    <div class="empty-state">
+      <p>No coins added yet.</p>
+      <button routerLink="/coins" class="portfolio-button">+ Add New Coin</button>
+    </div>
+  </ng-template>
+</div>
