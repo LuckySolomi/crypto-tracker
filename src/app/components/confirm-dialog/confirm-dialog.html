@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Confirm deletion</h2>
+<mat-dialog-content>
+  Are you sure you want to remove <strong>{{ data.name }}</strong> from your portfolio?
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-raised-button color="warn" [mat-dialog-close]="true">Delete</button>
+</mat-dialog-actions>
