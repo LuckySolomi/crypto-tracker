@@ -11,60 +11,63 @@
   <div *ngIf="portfolio.length > 0; else emptyPortfolio">
     <div class="summary"></div>
 
-    <table class="portfolio-table">
-      <thead>
-        <tr class="table-title-row">
-          <th>Coin</th>
-          <th>Amount</th>
-          <th>Buy Price</th>
-          <th>Current Price</th>
-          <th>General Price</th>
-          <th>Profit / Loss</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+    <div class="table-wrapper">
+      <table class="portfolio-table">
+        <thead>
+          <tr class="table-title-row">
+            <th>Coin</th>
+            <th>Amount</th>
+            <th>Buy Price</th>
+            <th>Current Price</th>
+            <th>General Price</th>
+            <th>Profit/ Loss</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        <tr *ngFor="let item of portfolio">
-          <td class="coin-info">
-            <img [src]="item.image" [alt]="item.name" [routerLink]="['/coins', item.id]" />
+        <tbody>
+          <tr *ngFor="let item of portfolio">
+            <td class="coin-info">
+              <img [src]="item.image" [alt]="item.name" [routerLink]="['/coins', item.id]" />
 
-            <div class="coin-name-container">
-              <span [routerLink]="['/coins', item.id]" class="coin-name">{{ item.name }}</span>
-              <span class="coin-symbol">
-                {{ item.symbol.toUpperCase() }}
-              </span>
-            </div>
-          </td>
-          <td data-label="Amount:  ">{{ item.amount }}</td>
+              <div class="coin-name-container">
+                <span [routerLink]="['/coins', item.id]" class="coin-name">{{ item.name }}</span>
+                <span class="coin-symbol">
+                  {{ item.symbol.toUpperCase() }}
+                </span>
+              </div>
+            </td>
+            <td data-label="Amount:  ">{{ item.amount }}</td>
 
-          <td data-label="Buy Price:  ">
-            {{ getAvgPrice(item) | currency: 'USD' }}
-          </td>
+            <td data-label="Buy Price:  ">
+              {{ getAvgPrice(item) | currency: 'USD' }}
+            </td>
 
-          <td data-label="Current Price:  ">
-            {{ item.currentPrice | currency: 'USD' }}
-          </td>
+            <td data-label="Current Price:  ">
+              {{ item.currentPrice | currency: 'USD' }}
+            </td>
 
-          <td data-label="General Price:  ">
-            {{ getCurrentValue(item) | currency: 'USD' }}
-          </td>
+            <td data-label="General Price:  ">
+              {{ getCurrentValue(item) | currency: 'USD' }}
+            </td>
 
-          <td
-            data-label="Profit:  "
-            [class.positive]="getProfit(item) >= 0"
-            [class.negative]="getProfit(item) < 0"
-          >
-            {{ getProfit(item) | currency: 'USD' }}
-          </td>
+            <td
+              data-label="Profit:  "
+              [class.positive]="getProfit(item) >= 0"
+              [class.negative]="getProfit(item) < 0"
+            >
+              {{ getProfit(item) | currency: 'USD' }}
+            </td>
 
-          <td class="optional-button-container">
-            <button (click)="editCoin(item)" class="optional-button">✏️</button>
-            <button (click)="deleteCoin(item)" class="optional-button">🗑</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td class="optional-button-container">
+              <button (click)="editCoin(item)" class="optional-button">✏️</button>
+              <button (click)="deleteCoin(item)" class="optional-button">🗑</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <div class="portfolio-button-container">
       <button routerLink="/coins" class="portfolio-button">+ Add New Coin</button>
     </div>
