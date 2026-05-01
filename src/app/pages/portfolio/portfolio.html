@@ -16,9 +16,9 @@
         <tr class="table-title-row">
           <th>Coin</th>
           <th>Amount</th>
-          <th>Avg Buy Price</th>
+          <th>Buy Price</th>
           <th>Current Price</th>
-          <th>Current Value</th>
+          <th>General Price</th>
           <th>Profit / Loss</th>
           <th>Actions</th>
         </tr>
@@ -36,26 +36,29 @@
               </span>
             </div>
           </td>
+          <td data-label="Amount:  ">{{ item.amount }}</td>
 
-          <td>{{ item.amount }}</td>
-
-          <td>
+          <td data-label="Buy Price:  ">
             {{ getAvgPrice(item) | currency: 'USD' }}
           </td>
 
-          <td>
+          <td data-label="Current Price:  ">
             {{ item.currentPrice | currency: 'USD' }}
           </td>
 
-          <td>
+          <td data-label="General Price:  ">
             {{ getCurrentValue(item) | currency: 'USD' }}
           </td>
 
-          <td [class.positive]="getProfit(item) >= 0" [class.negative]="getProfit(item) < 0">
+          <td
+            data-label="Profit:  "
+            [class.positive]="getProfit(item) >= 0"
+            [class.negative]="getProfit(item) < 0"
+          >
             {{ getProfit(item) | currency: 'USD' }}
           </td>
 
-          <td>
+          <td class="optional-button-container">
             <button (click)="editCoin(item)" class="optional-button">✏️</button>
             <button (click)="deleteCoin(item)" class="optional-button">🗑</button>
           </td>
