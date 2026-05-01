@@ -3,6 +3,7 @@ import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { CoinService } from '../../services/coin.service';
 import { Coin } from '../../models/coin.interface';
 import { RouterLink } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-coins',
@@ -13,6 +14,7 @@ import { RouterLink } from '@angular/router';
 })
 export class Coins implements OnInit {
   private coinService = inject(CoinService);
+  private snackBar = inject(MatSnackBar);
 
   coins: Coin[] = [];
   loading = true;
@@ -74,5 +76,32 @@ export class Coins implements OnInit {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+
+  addToPortfolio(coin: Coin): void {
+    const STORAGE_KEY = 'crypto-portfolio';
+
+    const portfolio = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+    const index = portfolio.findIndex((item: any) => item.id === coin.id);
+
+    if (index !== -1) {
+      portfolio[index].amount += 1;
+      portfolio[index].totalUsd += coin.current_price;
+    } else {
+      portfolio.push({
+        id: coin.id,
+        name: coin.name,
+        symbol: coin.symbol,
+        amount: 1,
+        totalUsd: coin.current_price,
+      });
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolio));
+
+    this.snackBar.open(`${coin.name} added`, 'OK', {
+      duration: 2000,
+    });
   }
 }

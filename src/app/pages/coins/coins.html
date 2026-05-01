@@ -52,23 +52,23 @@
           </td>
 
           <td>
-            <button class="tableButton">Add</button>
+            <button class="tableButton" (click)="addToPortfolio(coin)">Add</button>
           </td>
         </tr>
       </tbody>
     </table>
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
+
+      <button
+        *ngFor="let page of pages"
+        (click)="goToPage(page)"
+        [class.active]="page === currentPage"
+      >
+        {{ page }}
+      </button>
+
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+    </div>
   </ng-template>
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage === 1">Prev</button>
-
-    <button
-      *ngFor="let page of pages"
-      (click)="goToPage(page)"
-      [class.active]="page === currentPage"
-    >
-      {{ page }}
-    </button>
-
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
-  </div>
 </div>
