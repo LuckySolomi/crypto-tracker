@@ -47,9 +47,7 @@
             {{ coin.price_change_percentage_24h | number: '1.2-2' }}%
           </td>
 
-          <td>
-            {{ coin.market_cap | currency: 'USD' : 'symbol' : '1.0-0' }}
-          </td>
+          <td>${{ coin.market_cap | shortNumber }}</td>
 
           <td>
             <button class="tableButton" (click)="addToPortfolio(coin)">Add</button>

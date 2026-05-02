@@ -30,30 +30,22 @@
       <div class="stats-grid">
         <div class="stat-card">
           <span>Market Cap</span>
-          <strong>
-            {{ coin.market_cap | currency: 'USD' : 'symbol' : '1.0-0' }}
-          </strong>
+          <strong> ${{ coin.market_cap | shortNumber }} </strong>
         </div>
 
         <div class="stat-card">
           <span>24h Volume</span>
-          <strong>
-            {{ coin.total_volume | currency: 'USD' : 'symbol' : '1.0-0' }}
-          </strong>
+          <strong> ${{ coin.total_volume | shortNumber }} </strong>
         </div>
 
         <div class="stat-card">
           <span>24h High</span>
-          <strong>
-            {{ coin.high_24h | currency: 'USD' }}
-          </strong>
+          <strong> ${{ coin.high_24h | shortNumber }} </strong>
         </div>
 
         <div class="stat-card">
           <span>24h Low</span>
-          <strong>
-            {{ coin.low_24h | currency: 'USD' }}
-          </strong>
+          <strong> ${{ coin.low_24h | shortNumber }} </strong>
         </div>
       </div>
 

@@ -19,6 +19,7 @@ import {
 
 import { CoinService } from '../../services/coin.service';
 import type { Coin } from '../../models/coin.interface';
+import { ShortNumberPipe } from '../../pipes/short-number.pipe';
 
 Chart.register(
   LineController,
@@ -34,7 +35,15 @@ Chart.register(
 @Component({
   selector: 'app-coin-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencyPipe, DecimalPipe, RouterLink, BaseChartDirective],
+  imports: [
+    CommonModule,
+    FormsModule,
+    CurrencyPipe,
+    DecimalPipe,
+    RouterLink,
+    BaseChartDirective,
+    ShortNumberPipe,
+  ],
   templateUrl: './coin-details.html',
   styleUrl: './coin-details.css',
 })

@@ -4,11 +4,12 @@ import { CoinService } from '../../services/coin.service';
 import { Coin } from '../../models/coin.interface';
 import { RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ShortNumberPipe } from '../../pipes/short-number.pipe';
 
 @Component({
   selector: 'app-coins',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, DecimalPipe, RouterLink],
+  imports: [CommonModule, CurrencyPipe, DecimalPipe, RouterLink, ShortNumberPipe],
   templateUrl: './coins.html',
   styleUrl: './coins.css',
 })
