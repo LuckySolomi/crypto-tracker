@@ -20,6 +20,7 @@ import {
 import { CoinService } from '../../services/coin.service';
 import type { Coin } from '../../models/coin.interface';
 import { ShortNumberPipe } from '../../pipes/short-number.pipe';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 Chart.register(
   LineController,
@@ -41,6 +42,7 @@ Chart.register(
     CurrencyPipe,
     DecimalPipe,
     RouterLink,
+    MatSnackBarModule,
     BaseChartDirective,
     ShortNumberPipe,
   ],
@@ -53,6 +55,7 @@ export class CoinDetails implements OnInit {
 
   private route = inject(ActivatedRoute);
   private coinService = inject(CoinService);
+  private snackBar = inject(MatSnackBar);
 
   coin: Coin | null = null;
   loading = true;
@@ -238,14 +241,13 @@ export class CoinDetails implements OnInit {
     }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolio));
-    this.showSuccess('Added to portfolio');
+
     this.coinAmount = 1;
     this.onCoinInput();
-  }
-
-  showSuccess(message: string): void {
-    this.successMessage = message;
-    setTimeout(() => (this.successMessage = ''), 2000);
+    this.snackBar.open('Added to portfolio', '', {
+      duration: 2000,
+      panelClass: ['success-snackbar'],
+    });
   }
 
   get displayedDescription(): string {

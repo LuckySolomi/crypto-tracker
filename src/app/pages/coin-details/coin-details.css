@@ -149,7 +149,7 @@
 }
 
 .read-more-btn:hover {
-  color: #4f46e5;
+  text-shadow: 2px 2px 5px #49bff3;
   transform: translateX(-3px);
 }
 
@@ -181,7 +181,7 @@
 
 .period-buttons button.active {
   background: white;
-  color: #6366f1;
+  color: #38bdf8;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -272,21 +272,6 @@
   text-align: center;
   padding: 4rem;
   font-size: 1.2rem;
-}
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-
-  background: #16a34a;
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-
-  animation: fadeInOut 2s ease;
 }
 
 @keyframes fadeInOut {

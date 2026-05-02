@@ -101,8 +101,9 @@ export class Coins implements OnInit {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolio));
 
-    this.snackBar.open(`${coin.name} added`, 'OK', {
+    this.snackBar.open(`${coin.name} added`, '', {
       duration: 2000,
+      panelClass: ['success-snackbar'],
     });
   }
 }

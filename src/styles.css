@@ -7,3 +7,32 @@ body {
 * {
   box-sizing: border-box;
 }
+
+h1 {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+p {
+  font-size: 18px;
+  font-weight: 400;
+  color: #909192;
+}
+
+.success-snackbar .mdc-snackbar__surface {
+  border-radius: 8px !important;
+}
+
+.success-snackbar {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  body {
+    min-width: 390px;
+  }
+}

@@ -101,8 +101,9 @@ export class Portfolio implements OnInit {
 
         this.cdr.detectChanges();
 
-        this.snackBar.open(`${item.name} deleted`, 'Close', {
-          duration: 3000,
+        this.snackBar.open(`${item.name} deleted`, '', {
+          duration: 2000,
+          panelClass: ['success-snackbar'],
         });
       }
     });
@@ -131,7 +132,10 @@ export class Portfolio implements OnInit {
           this.loadPortfolio();
           this.cdr.detectChanges();
 
-          this.snackBar.open(`${item.name} updated`, 'OK', { duration: 2000 });
+          this.snackBar.open(`${item.name} updated`, '', {
+            duration: 2000,
+            panelClass: ['success-snackbar'],
+          });
         }
       }
     });
