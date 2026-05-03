@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { CoinService } from '../../services/coin.service';
 import { Coin } from '../../models/coin.interface';
@@ -16,6 +16,7 @@ import { ShortNumberPipe } from '../../pipes/short-number.pipe';
 export class Coins implements OnInit {
   private coinService = inject(CoinService);
   private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
 
   coins: Coin[] = [];
   loading = true;
@@ -38,10 +39,12 @@ export class Coins implements OnInit {
         this.coins = data;
         this.currentPage = 1;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'Failed to load cryptocurrency data.';
         this.loading = false;
+        this.cdr.detectChanges();
       },
     });
   }
