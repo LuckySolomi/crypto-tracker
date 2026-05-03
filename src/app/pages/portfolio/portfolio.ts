@@ -1,14 +1,15 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { CoinService } from '../../services/coin.service';
 import { PortfolioItem } from '../../models/portfolio-item.interface';
+import { CoinService } from '../../services/coin.service';
+import { PortfolioService } from '../../services/portfolio.service';
 import { RouterLink } from '@angular/router';
 import { Coin } from '../../models/coin.interface';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { EditCoinDialog } from '../../components/edit-coin-dialog/edit-coin-dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
-import { ChangeDetectorRef } from '@angular/core';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-portfolio',
@@ -19,45 +20,50 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class Portfolio implements OnInit {
   private coinService = inject(CoinService);
+  private portfolioService = inject(PortfolioService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
-  private cdr = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef); // ✅ додаємо
 
-  portfolio: any[] = []; // UI дані
-  rawPortfolio: PortfolioItem[] = []; // тільки localStorage
-
+  portfolio: PortfolioItem[] = [];
   totalBalance = 0;
   totalProfit = 0;
-
-  private readonly STORAGE_KEY = 'crypto-portfolio';
+  coins: Coin[] = [];
 
   ngOnInit(): void {
-    this.loadPortfolio();
-  }
-
-  // LOAD
-
-  loadPortfolio(): void {
-    this.rawPortfolio = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || '[]');
-
-    this.coinService.getCoins().subscribe((coins: Coin[]) => {
-      this.portfolio = this.rawPortfolio.map((item) => {
-        const coin = coins.find((c) => c.id === item.id);
-
-        return {
-          ...item,
-          name: coin?.name ?? '',
-          symbol: coin?.symbol ?? '',
-          image: coin?.image ?? '',
-          currentPrice: coin?.current_price ?? 0,
-        };
-      });
-
-      this.calculateTotals();
+    const portfolioSub = combineLatest([
+      this.coinService.getCoins(),
+      this.portfolioService.getPortfolio$(),
+    ]).subscribe(([coins, rawPortfolio]) => {
+      this.mapPortfolio(rawPortfolio, coins);
     });
+
+    this.subscription.add(portfolioSub);
   }
 
-  // CALCULATIONS
+  private subscription = new Subscription();
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private mapPortfolio(rawPortfolio: PortfolioItem[], coins: Coin[]): void {
+    this.portfolio = rawPortfolio.map((item) => {
+      const coin = coins.find((c) => c.id === item.id);
+
+      return {
+        ...item,
+        name: coin?.name ?? item.name,
+        symbol: coin?.symbol ?? item.symbol,
+        image: coin?.image ?? '',
+        currentPrice: coin?.current_price ?? 0,
+      };
+    });
+
+    this.calculateTotals();
+    this.cdr.detectChanges();
+  }
+
+  // 🔹 CALCULATIONS
 
   getAvgPrice(item: any): number {
     return item.totalUsd / item.amount;
@@ -77,15 +83,7 @@ export class Portfolio implements OnInit {
     this.totalProfit = this.portfolio.reduce((sum, item) => sum + this.getProfit(item), 0);
   }
 
-  // SAVE ONLY RAW DATA
-
-  private saveRaw(): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.rawPortfolio));
-  }
-
-  // DELETE
-
-  deleteCoin(item: any): void {
+  deleteCoin(item: PortfolioItem): void {
     const dialogRef = this.dialog.open(ConfirmDialog, {
       width: '350px',
       data: { name: item.name },
@@ -93,25 +91,13 @@ export class Portfolio implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.rawPortfolio = this.rawPortfolio.filter((i) => i.id !== item.id);
-        this.portfolio = this.portfolio.filter((i) => i.id !== item.id);
-
-        this.saveRaw();
-        this.calculateTotals();
-
-        this.cdr.detectChanges();
-
-        this.snackBar.open(`${item.name} deleted`, '', {
-          duration: 2000,
-          panelClass: ['success-snackbar'],
-        });
+        this.portfolioService.deleteCoin(item.id);
+        this.showSnackBar(`${item.name} deleted`);
       }
     });
   }
 
-  // EDIT
-
-  editCoin(item: any): void {
+  editCoin(item: PortfolioItem): void {
     const dialogRef = this.dialog.open(EditCoinDialog, {
       width: '400px',
       data: { ...item },
@@ -119,28 +105,16 @@ export class Portfolio implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const index = this.rawPortfolio.findIndex((p) => p.id === item.id);
-
-        if (index !== -1) {
-          const safeAmount = Math.max(1, result.amount);
-          const safeTotalUsd = Math.max(0, result.totalUsd);
-
-          this.rawPortfolio[index] = {
-            ...this.rawPortfolio[index],
-            amount: safeAmount,
-            totalUsd: safeTotalUsd,
-          };
-
-          this.saveRaw();
-          this.loadPortfolio();
-          this.cdr.detectChanges();
-
-          this.snackBar.open(`${item.name} updated`, '', {
-            duration: 2000,
-            panelClass: ['success-snackbar'],
-          });
-        }
+        this.portfolioService.updateCoin(item.id, result.amount, result.totalUsd);
+        this.showSnackBar(`${item.name} updated`);
       }
+    });
+  }
+
+  private showSnackBar(message: string): void {
+    this.snackBar.open(message, '', {
+      duration: 2000,
+      panelClass: ['success-snackbar'],
     });
   }
 }
