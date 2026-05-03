@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
 import { CoinService } from '../../services/coin.service';
+import { PortfolioService } from '../../services/portfolio.service';
 import { Coin } from '../../models/coin.interface';
 import { RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,6 +16,7 @@ import { ShortNumberPipe } from '../../pipes/short-number.pipe';
 })
 export class Coins implements OnInit {
   private coinService = inject(CoinService);
+  private portfolioService = inject(PortfolioService);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
 
@@ -83,28 +85,15 @@ export class Coins implements OnInit {
   }
 
   addToPortfolio(coin: Coin): void {
-    const STORAGE_KEY = 'crypto-portfolio';
+    this.portfolioService.addCoin({
+      id: coin.id,
+      name: coin.name,
+      symbol: coin.symbol,
+      amount: 1,
+      totalUsd: coin.current_price,
+    });
 
-    const portfolio = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
-    const index = portfolio.findIndex((item: any) => item.id === coin.id);
-
-    if (index !== -1) {
-      portfolio[index].amount += 1;
-      portfolio[index].totalUsd += coin.current_price;
-    } else {
-      portfolio.push({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol,
-        amount: 1,
-        totalUsd: coin.current_price,
-      });
-    }
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolio));
-
-    this.snackBar.open(`${coin.name} added`, '', {
+    this.snackBar.open(`${coin.name} added to portfolio`, '', {
       duration: 2000,
       panelClass: ['success-snackbar'],
     });

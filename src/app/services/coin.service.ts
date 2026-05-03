@@ -8,6 +8,7 @@ import { Coin } from '../models/coin.interface';
 })
 export class CoinService {
   private http = inject(HttpClient);
+
   private apiUrl = 'https://api.coingecko.com/api/v3/coins/markets';
 
   private cache: Coin[] | null = null;
@@ -17,15 +18,13 @@ export class CoinService {
   private readonly STORAGE_TIME_KEY = 'crypto-coins-cache-time';
   private readonly CACHE_DURATION = 12 * 60 * 60 * 1000;
 
+  // COINS LIST
   getCoins(): Observable<Coin[]> {
     const cached = this.getValidCache();
 
     if (cached) {
-      console.log('Returning cached data');
       return of(cached);
     }
-
-    console.log('Fetching fresh data from API');
 
     return this.http
       .get<Coin[]>(this.apiUrl, {
@@ -37,30 +36,28 @@ export class CoinService {
           sparkline: 'false',
         },
       })
-      .pipe(
-        tap((coins) => {
-          this.saveCache(coins);
-        }),
-      );
+      .pipe(tap((coins) => this.saveCache(coins)));
   }
 
+  //  SINGLE COIN
+  getCoinById(id: string): Observable<Coin | undefined> {
+    return this.getCoins().pipe(map((coins) => coins.find((coin) => coin.id === id)));
+  }
+
+  // CACHE
   private getValidCache(): Coin[] | null {
     const now = Date.now();
 
-    // перевірка памʼяті
-    if (this.cache) {
-      return this.cache;
-    }
+    if (this.cache) return this.cache;
 
-    // перевірка localStorage
     const storedData = localStorage.getItem(this.STORAGE_KEY);
     const storedTime = localStorage.getItem(this.STORAGE_TIME_KEY);
 
     if (!storedData || !storedTime) return null;
 
-    const time = Number(storedTime);
+    const age = now - Number(storedTime);
 
-    if (now - time > this.CACHE_DURATION) {
+    if (age > this.CACHE_DURATION) {
       this.clearCache();
       return null;
     }
@@ -73,10 +70,9 @@ export class CoinService {
 
   private saveCache(coins: Coin[]): void {
     this.cache = coins;
-    const now = Date.now();
 
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(coins));
-    localStorage.setItem(this.STORAGE_TIME_KEY, now.toString());
+    localStorage.setItem(this.STORAGE_TIME_KEY, Date.now().toString());
   }
 
   clearCache(): void {
@@ -86,21 +82,19 @@ export class CoinService {
     localStorage.removeItem(this.STORAGE_TIME_KEY);
   }
 
-  getCoinById(id: string): Observable<Coin | undefined> {
-    return this.getCoins().pipe(map((coins) => coins.find((coin) => coin.id === id)));
-  }
-
+  // Chart data with caching
   getCoinChart(id: string, days: string): Observable<any> {
-    const storageKey = `crypto-chart-${id}-${days}`; // Додаємо days до ключа кешу
-    const storageTimeKey = `crypto-chart-time-${id}-${days}`;
-
     const cacheKey = `${id}-${days}`;
 
+    const storageKey = `crypto-chart-${cacheKey}`;
+    const storageTimeKey = `crypto-chart-time-${cacheKey}`;
+
+    // memory cache
     if (this.chartCache[cacheKey]) {
-      console.log('Returning chart from memory cache');
       return of(this.chartCache[cacheKey]);
     }
 
+    // localStorage cache
     const storedData = localStorage.getItem(storageKey);
     const storedTime = localStorage.getItem(storageTimeKey);
 
@@ -110,8 +104,6 @@ export class CoinService {
       if (age < this.CACHE_DURATION) {
         const parsed = JSON.parse(storedData);
         this.chartCache[cacheKey] = parsed;
-
-        console.log('Returning chart from localStorage');
         return of(parsed);
       }
     }
@@ -120,7 +112,7 @@ export class CoinService {
       .get<any>(`https://api.coingecko.com/api/v3/coins/${id}/market_chart`, {
         params: {
           vs_currency: 'usd',
-          days: days,
+          days,
         },
       })
       .pipe(

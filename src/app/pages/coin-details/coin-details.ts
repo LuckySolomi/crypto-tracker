@@ -18,6 +18,7 @@ import {
 } from 'chart.js';
 
 import { CoinService } from '../../services/coin.service';
+import { PortfolioService } from '../../services/portfolio.service';
 import type { Coin } from '../../models/coin.interface';
 import { ShortNumberPipe } from '../../pipes/short-number.pipe';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -50,23 +51,21 @@ Chart.register(
   styleUrl: './coin-details.css',
 })
 export class CoinDetails implements OnInit {
-  // Дозволяє керувати графіком безпосередньо (для оновлення даних)
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
   private route = inject(ActivatedRoute);
   private coinService = inject(CoinService);
+  private portfolioService = inject(PortfolioService);
   private snackBar = inject(MatSnackBar);
 
   coin: Coin | null = null;
   loading = true;
 
-  // STATE
   coinAmount = 1;
   usdValue = 0;
   errorMessage = '';
   successMessage = '';
 
-  // DESCRIPTION
   isDescriptionExpanded = false;
   description = `
     is one of the leading cryptocurrencies in the digital asset market.
@@ -125,10 +124,8 @@ export class CoinDetails implements OnInit {
       y: {
         grid: { color: 'rgba(0, 0, 0, 0.05)' },
         ticks: {
-          // value — це число, яке приходить від Chart.js
           callback: function (value) {
             const numValue = Number(value);
-            // Якщо число маленьке (менше 10), показуємо 3 знаки, якщо велике — 2 або 0
             return (
               '$' +
               numValue.toLocaleString('en-US', {
@@ -207,43 +204,32 @@ export class CoinDetails implements OnInit {
   // CALCULATOR LOGIC
   onCoinInput(): void {
     if (!this.coin) return;
-    this.coinAmount = Math.max(0, this.coinAmount);
-    this.usdValue = this.coinAmount ? +(this.coinAmount * this.coin.current_price).toFixed(2) : 0;
+    this.coinAmount = Math.max(1, this.coinAmount);
+    this.usdValue = +(this.coinAmount * this.coin.current_price).toFixed(2);
   }
 
   onUsdInput(): void {
     if (!this.coin) return;
     this.usdValue = Math.max(0, this.usdValue);
-    this.coinAmount = this.usdValue ? +(this.usdValue / this.coin.current_price).toFixed(8) : 0;
+    this.coinAmount = +(this.usdValue / this.coin.current_price).toFixed(8);
   }
 
-  // PORTFOLIO
   addToPortfolio(): void {
-    if (!this.coin || this.coinAmount <= 0) {
-      this.errorMessage = 'Enter valid values';
-      return;
-    }
-    const STORAGE_KEY = 'crypto-portfolio';
-    const portfolio = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    const index = portfolio.findIndex((item: any) => item.id === this.coin!.id);
+    if (!this.coin || this.coinAmount <= 0) return;
 
-    if (index !== -1) {
-      portfolio[index].amount += this.coinAmount;
-      portfolio[index].totalUsd += this.usdValue;
-    } else {
-      portfolio.push({
-        id: this.coin.id,
-        name: this.coin.name,
-        symbol: this.coin.symbol,
-        amount: this.coinAmount,
-        totalUsd: this.usdValue,
-      });
-    }
+    this.portfolioService.addCoin({
+      id: this.coin.id,
+      name: this.coin.name,
+      symbol: this.coin.symbol,
+      amount: this.coinAmount,
+      totalUsd: this.usdValue,
+    });
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolio));
-
+    // reset
     this.coinAmount = 1;
     this.onCoinInput();
+
+    // snackbar
     this.snackBar.open('Added to portfolio', '', {
       duration: 2000,
       panelClass: ['success-snackbar'],
@@ -252,7 +238,9 @@ export class CoinDetails implements OnInit {
 
   get displayedDescription(): string {
     if (!this.coin) return '';
+
     const fullText = `${this.coin.name} ${this.description}`;
+
     return this.isDescriptionExpanded ? fullText : fullText.slice(0, 350) + '...';
   }
 
