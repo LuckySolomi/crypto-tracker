@@ -122,10 +122,13 @@ export class Portfolio implements OnInit {
         const index = this.rawPortfolio.findIndex((p) => p.id === item.id);
 
         if (index !== -1) {
+          const safeAmount = Math.max(1, result.amount);
+          const safeTotalUsd = Math.max(0, result.totalUsd);
+
           this.rawPortfolio[index] = {
             ...this.rawPortfolio[index],
-            amount: result.amount,
-            totalUsd: result.totalUsd,
+            amount: safeAmount,
+            totalUsd: safeTotalUsd,
           };
 
           this.saveRaw();

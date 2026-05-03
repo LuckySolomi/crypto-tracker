@@ -26,10 +26,26 @@ export class EditCoinDialog {
   }
 
   updateTotal() {
+    if (!this.newAmount || this.newAmount < 1) {
+      this.newTotalUsd = 0;
+      return;
+    }
+
     this.newTotalUsd = this.newAmount * this.avgPrice;
   }
 
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  onSave(input: any): void {
+    if (input.invalid || this.newAmount < 1) {
+      return;
+    }
+
+    this.dialogRef.close({
+      amount: this.newAmount,
+      totalUsd: this.newTotalUsd,
+    });
   }
 }
